@@ -69,18 +69,18 @@ public class SecurityConfig {
     // for the AS endpoints.
     public SecurityFilterChain appSecurityFilterChain(HttpSecurity http) {
 
-        // Default form login by Spring.
-        http.formLogin(Customizer.withDefaults());
+        http
+                // Default form login by Spring.
+                .formLogin(Customizer.withDefaults())
 
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/register").permitAll()
+                        .anyRequest().authenticated()
+                )
 
-        http.authorizeHttpRequests((authorize) -> authorize
-                .requestMatchers("/register").permitAll()
-                .anyRequest().authenticated()
-        );
-
-        http.csrf(csrf -> csrf
-                .ignoringRequestMatchers("/register")
-        );
+                .csrf((csrf) -> csrf
+                        .ignoringRequestMatchers("/register")
+                );
 
         return http.build();
     }
