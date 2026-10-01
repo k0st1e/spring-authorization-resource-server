@@ -45,7 +45,7 @@ public class SecurityConfig {
                     authorizationServer.oidc(Customizer.withDefaults());
                 })
 
-                // As such, the following:
+                // Based on the previous `securityMatcher`, the following:
                 .authorizeHttpRequests((authorize) -> authorize
                         .anyRequest().authenticated()
                 )
@@ -63,10 +63,8 @@ public class SecurityConfig {
 
     @Bean
     @Order(2)
-    // Authn and Authz for other security mechanisms.
-    // Note it is of `Order(2)`. We do not want this to
-    // run through everything before the `securityMatcher`
-    // for the AS endpoints.
+    // Note it is of `Order(2)`. We do not want this to run through
+    // everything before the `securityMatcher` for the AS endpoints.
     public SecurityFilterChain appSecurityFilterChain(HttpSecurity http) {
 
         http
@@ -79,6 +77,7 @@ public class SecurityConfig {
                 )
 
                 .csrf((csrf) -> csrf
+                        // Ignore CSRF just for the `/register` mapping.
                         .ignoringRequestMatchers("/register")
                 );
 
@@ -110,7 +109,6 @@ public class SecurityConfig {
     }
 
     // Generate and have a simple in-memory holder for a key pair.
-    // In prod, we could consume them from a vault implementation along with some nice key rotation.
     private static KeyPair generateRsaKey() {
         KeyPair keyPair;
         try {
