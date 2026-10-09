@@ -19,8 +19,8 @@ public class SecurityConfig {
         http
 
                 .authorizeHttpRequests((authorize) -> authorize
-                        // Add matchers for Tasks API end-points.
-                        // .requestMatchers("").hasAuthority("USER")
+                        // For Tasks API end-points.
+                        .requestMatchers("/api/v1/tasks/**").hasAuthority("USER")
                         .anyRequest().authenticated()
                 )
 
