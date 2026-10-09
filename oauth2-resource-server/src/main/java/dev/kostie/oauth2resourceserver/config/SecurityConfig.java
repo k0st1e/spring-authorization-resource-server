@@ -20,7 +20,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((authorize) -> authorize
                         // Add matchers for Tasks API end-points.
-                        .requestMatchers("").hasAuthority("USER")
+                        // .requestMatchers("").hasAuthority("USER")
                         .anyRequest().authenticated()
                 )
 
