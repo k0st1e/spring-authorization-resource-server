@@ -25,6 +25,7 @@ public class UserService {
 
         // Map the request to an Entity with mapper.
         User user = userMapper.toEntity(registerRequest);
+
         // Save the user.
         User userSaved = userRepository.save(user);
 
