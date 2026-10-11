@@ -1,0 +1,14 @@
+when:
+  - event: push
+    branch: main
+    path:
+      include:
+        - 'oauth2-authorization-server/**'
+        - '.woodpecker/authorization-server.yaml'
+
+steps:
+  - name: build
+    image: eclipse-temurin:17
+    commands:
+      - cd oauth2-authorization-server
+      - ./mvnw -B package -DskipTests
