@@ -75,7 +75,7 @@ public class Client {
                         // .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
 
                         // Production token time to live shouldn't be long.
-                        .accessTokenTimeToLive(Duration.ofMinutes(2))
+                        .accessTokenTimeToLive(Duration.ofMinutes(5))
                         .build())
 
                 .build();
