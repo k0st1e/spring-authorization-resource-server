@@ -52,4 +52,23 @@ public class TaskService {
 
         return taskMapper.toResponse(savedTask);
     }
+
+    // Delete Task
+    public void deleteTask(int id) {
+        Task task = taskRepository.findByIdAndUserSub(id, currentUserSubject())
+                .orElseThrow(() -> new NoTasksFoundException());
+        taskRepository.delete(task);
+    }
+
+    // Update Task
+    public TaskResponse updateTask(int id, TaskRequest taskRequest) {
+        Task task = taskRepository.findByIdAndUserSub(id, currentUserSubject())
+                .orElseThrow(() -> new NoTasksFoundException());
+
+        task.setTitle(taskRequest.title());
+
+        Task savedTask = taskRepository.save(task);
+
+        return taskMapper.toResponse(savedTask);
+    }
 }
