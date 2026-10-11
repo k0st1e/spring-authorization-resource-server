@@ -18,12 +18,13 @@ public class Task {
 
     private String title;
 
-    private String user_sub;
+    @Column(name = "user_sub")
+    private String userSub;
 
     @Builder
-    public Task(int id, String title, String user_sub) {
+    public Task(int id, String title, String userSub) {
         this.id = id;
         this.title = title;
-        this.user_sub = user_sub;
+        this.userSub = userSub;
     }
 }

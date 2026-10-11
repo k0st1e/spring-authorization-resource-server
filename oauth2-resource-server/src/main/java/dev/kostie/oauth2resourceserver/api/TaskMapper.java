@@ -14,9 +14,10 @@ public class TaskMapper {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        // Build a `Task` Entity and use the `sub` from the auth object which was converted from the JWT.
         return Task.builder()
                 .title(taskRequest.title())
-                .user_sub(authentication.getName())
+                .userSub(authentication.getName())
                 .build();
     }
 
