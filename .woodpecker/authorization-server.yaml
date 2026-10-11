@@ -1,4 +1,4 @@
-# Build pipeline for the authorization server.
+# Woodpecker Testing Pipeline
 when:
   - event: push
     branch: master
@@ -8,8 +8,12 @@ when:
         - '.woodpecker/authorization-server.yaml'
 
 steps:
-  - name: build
+  - name: test
     image: eclipse-temurin:17
     commands:
       - cd oauth2-authorization-server
-      - ./mvnw -B package -DskipTests
+      - ./mvnw -B verify
+
+    # Give container Access to Pi's Docker, so TestContainers can start MySQL for testing.
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
