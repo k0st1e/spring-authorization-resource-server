@@ -21,18 +21,20 @@ steps:
       - /var/run/docker.sock:/var/run/docker.sock
 
   - name: publish
-    image: woodpeckerci/plugin-docker-buildx:6.1.2-insecure
-    settings:
-      registry: http://100.87.71.109:3000
-      repo: 100.87.71.109:3000/k0st1e/authorization-server
-      tags: latest
-      platforms: linux/amd64,linux/arm64
-      context: oauth2-authorization-server
-      dockerfile: oauth2-authorization-server/Dockerfile
-      insecure: true
-      buildkit_config: |
-        [registry."100.87.71.109:3000"]
-          http = true
-      username: k0st1e
-      password:
+    image: docker:cli
+    environment:
+      GITEA_TOKEN:
         from_secret: gitea_registry_token
+    commands:
+      # Buildkit config - Only HTTP.
+      - printf '[registry."100.87.71.109:3000"]\n  http = true\n' > buildkitd.toml
+      # Log in
+      - echo "$${GITEA_TOKEN}" | docker login 100.87.71.109:3000 -u k0st1e --password-stdin
+      # Multi-platform builder that uses the config.
+      - docker buildx create --name multiarch --driver docker-container --buildkitd-config buildkitd.toml --use
+      # Build for both amd64 and arm64.
+      - docker buildx build --platform linux/amd64,linux/arm64 -t 100.87.71.109:3000/k0st1e/authorization-server:latest --push oauth2-authorization-server
+      # Remove it.
+      - docker buildx rm multiarch
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
