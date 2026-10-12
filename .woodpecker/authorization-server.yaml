@@ -23,7 +23,7 @@ steps:
   - name: publish
     image: woodpeckerci/plugin-docker-buildx:6.0.3
     settings:
-      registry: 100.87.71.109:3000
+      registry: http://100.87.71.109:3000
       repo: 100.87.71.109:3000/k0st1e/authorization-server
       tags: latest
       platforms: linux/amd64,linux/arm64
