@@ -25,15 +25,23 @@ steps:
     environment:
       GITEA_TOKEN:
         from_secret: gitea_registry_token
+      DOCKERHUB_TOKEN:
+        from_secret: docker_registry_token
+
     commands:
       # Buildkit config - Only HTTP.
       - printf '[registry."100.87.71.109:3000"]\n  http = true\n' > buildkitd.toml
-      # Log in
+
+      # Log in to Gitea and DockerHub
       - echo "$${GITEA_TOKEN}" | docker login 100.87.71.109:3000 -u k0st1e --password-stdin
+      - echo "$${DOCKERHUB_TOKEN}" | docker login -u k0stie --password-stdin
+
       # Multi-platform builder that uses the config.
       - docker buildx create --name multiarch --driver docker-container --buildkitd-config buildkitd.toml --use
-      # Build for both amd64 and arm64.
-      - docker buildx build --platform linux/amd64,linux/arm64 -t 100.87.71.109:3000/k0st1e/authorization-server:latest --push oauth2-authorization-server
+
+      # Build for both amd64 and arm64. Publishes in Gitea but also DockerHub.
+      - docker buildx build --platform linux/amd64,linux/arm64 -t 100.87.71.109:3000/k0st1e/authorization-server:latest -t k0stie/authorization-server:latest --push oauth2-authorization-server
+
       # Remove it.
       - docker buildx rm multiarch
     volumes:
