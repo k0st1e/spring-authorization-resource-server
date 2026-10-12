@@ -1,4 +1,4 @@
-# Build, test and publish pipeline for the authorization server.
+# Build, test and publish Woodpecker Pipeline for the Authorization Server.
 
 when:
   - event: push
@@ -15,7 +15,8 @@ steps:
       - cd oauth2-authorization-server
       - ./mvnw -B verify
 
-    # Give container access to Pi's Docker, so Testcontainers can start MySQL for testing.
+    # `docker.sock` is the file used for programs to talk to Docker.
+    # This makes it available to be used by Testcontainers, to create the MySQL container.
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -28,7 +29,5 @@ steps:
       - echo "$${GITEA_TOKEN}" | docker login 100.87.71.109:3000 -u k0st1e --password-stdin
       - docker build -t 100.87.71.109:3000/k0st1e/authorization-server:latest oauth2-authorization-server
       - docker push 100.87.71.109:3000/k0st1e/authorization-server:latest
-
-    # Build and push using Pi's Docker.
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
