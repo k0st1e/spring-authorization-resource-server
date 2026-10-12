@@ -33,7 +33,6 @@ steps:
       buildkit_config: |
         [registry."100.87.71.109:3000"]
           http = true
-          insecure = true
       username: k0st1e
       password:
         from_secret: gitea_registry_token
