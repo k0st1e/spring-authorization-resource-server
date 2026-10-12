@@ -1,4 +1,5 @@
-# Woodpecker Testing Pipeline
+# Build, test and publish pipeline for the authorization server.
+
 when:
   - event: push
     branch: master
@@ -14,6 +15,20 @@ steps:
       - cd oauth2-authorization-server
       - ./mvnw -B verify
 
-    # Give container Access to Pi's Docker, so TestContainers can start MySQL for testing.
+    # Give container access to Pi's Docker, so Testcontainers can start MySQL for testing.
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  - name: publish
+    image: docker
+    environment:
+      GITEA_TOKEN:
+        from_secret: gitea_registry_token
+    commands:
+      - echo "$${GITEA_TOKEN}" | docker login 100.87.71.109:3000 -u k0st1e --password-stdin
+      - docker build -t 100.87.71.109:3000/k0st1e/authorization-server:latest oauth2-authorization-server
+      - docker push 100.87.71.109:3000/k0st1e/authorization-server:latest
+
+    # Build and push using Pi's Docker.
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
