@@ -21,13 +21,15 @@ steps:
       - /var/run/docker.sock:/var/run/docker.sock
 
   - name: publish
-    image: docker
-    environment:
-      GITEA_TOKEN:
+    image: woodpeckerci/plugin-docker-buildx
+    settings:
+      registry: 100.87.71.109:3000
+      repo: 100.87.71.109:3000/k0st1e/authorization-server
+      tags: latest
+      platforms: linux/amd64,linux/arm64
+      context: oauth2-authorization-server
+      dockerfile: oauth2-authorization-server/Dockerfile
+      insecure: true
+      username: k0st1e
+      password:
         from_secret: gitea_registry_token
-    commands:
-      - echo "$${GITEA_TOKEN}" | docker login 100.87.71.109:3000 -u k0st1e --password-stdin
-      - docker build -t 100.87.71.109:3000/k0st1e/authorization-server:latest oauth2-authorization-server
-      - docker push 100.87.71.109:3000/k0st1e/authorization-server:latest
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
