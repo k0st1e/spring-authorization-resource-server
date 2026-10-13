@@ -26,7 +26,7 @@ The aim of this project is to have an **Authorization Server** and a **Resource 
 ### Client
 
 1. An application was built with React Native along the help of Expo. User-interface wise, `@expo/ui/jetpack-compose` was used that offers native components for the Android platform.
-2. For more information regarding the client side of the actors in the OAuth2 flow visit the [React Repository]().
+2. For more information regarding the client side of the actors in the OAuth2 flow visit the [React Repository](https://github.com/k0st1e/react-client-for-spring-oauth2).
 
 ### Resource Server side logic
 
@@ -104,4 +104,4 @@ Both pipelines run each step:
    
 * Next to `docker-compose.yaml` a folder named `mysql-data` will be created which holds the database data.
 
-* Head over to the [react repository (how to run section)]() and follow the instructions. It explains how to use the Android mobile application.
+* Head over to the [react repository (getting started section)](https://github.com/k0st1e/react-client-for-spring-oauth2#getting-started) and follow the instructions. It explains how to use the Android mobile application.
