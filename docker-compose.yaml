@@ -1,0 +1,51 @@
+services:
+
+  # MySQL
+  mysql:
+    image: mysql:8.0.36
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: authorization_server_react
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Authorization Server
+  authorization-server:
+    image: k0stie/authorization-server:latest
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/authorization_server_react
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+
+  # Resource Server
+  resource-server:
+    image: k0stie/resource-server:latest
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      authorization-server:
+        condition: service_started
+    environment:
+      SERVER_PORT: 9090
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/resource_server_react?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      JWKSURI: http://authorization-server:8080/oauth2/jwks
+    ports:
+      - "9090:9090"
