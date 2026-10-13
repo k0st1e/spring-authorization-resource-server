@@ -1,0 +1,48 @@
+# Build, test and publish Woodpecker Pipeline for the Resource Server.
+
+when:
+  - event: push
+    branch: master
+    path:
+      include:
+        - 'oauth2-resource-server/**'
+        - '.woodpecker/resource-server.yaml'
+
+steps:
+  - name: test
+    image: eclipse-temurin:17
+    commands:
+      - cd oauth2-resource-server
+      - ./mvnw -B verify
+
+    # `docker.sock` is the file used for programs to talk to Docker.
+    # This makes it available to be used by Testcontainers, to create the MySQL container.
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  - name: publish
+    image: docker:cli
+    environment:
+      GITEA_TOKEN:
+        from_secret: gitea_registry_token
+      DOCKERHUB_TOKEN:
+        from_secret: docker_registry_token
+
+    commands:
+      # Buildkit config - Only HTTP.
+      - printf '[registry."100.87.71.109:3000"]\n  http = true\n' > buildkitd.toml
+
+      # Log in to Gitea and DockerHub
+      - echo "$${GITEA_TOKEN}" | docker login 100.87.71.109:3000 -u k0st1e --password-stdin
+      - echo "$${DOCKERHUB_TOKEN}" | docker login -u k0stie --password-stdin
+
+      # Multi-platform builder that uses the config.
+      - docker buildx create --name multiarch-rs --driver docker-container --buildkitd-config buildkitd.toml --use
+
+      # Build for both amd64 and arm64. Publishes in Gitea but also DockerHub.
+      - docker buildx build --platform linux/amd64,linux/arm64 -t 100.87.71.109:3000/k0st1e/resource-server:latest -t k0stie/resource-server:latest --push oauth2-resource-server
+
+      # Remove it.
+      - docker buildx rm multiarch-rs
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
