@@ -75,7 +75,7 @@ For CI/CD, Woodpecker was chosen. It is free, open-source and based on Docker co
 
 Two (2) pipelines were built; [authorization-server.yaml](.woodpecker/authorization-server.yaml) and [resource-server.yaml](.woodpecker/resource-server.yaml).
 
-Both pipelines run each step in a container:
+Both pipelines run each step:
 
 1. Woodpecker clones the repository.
 2. Compiles, runs the `Testcontainer` tests using MySQL containers, and builds the JAR.
