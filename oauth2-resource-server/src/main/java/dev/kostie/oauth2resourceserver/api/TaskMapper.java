@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class TaskMapper {
 
+    // Build a `Task` Entity and use the `sub` from the Authn Object converted from the JWT.
     public Task toEntity(TaskRequest taskRequest) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // Build a `Task` Entity and use the `sub` from the auth object which was converted from the JWT.
         return Task.builder()
                 .title(taskRequest.title())
                 .userSub(authentication.getName())
