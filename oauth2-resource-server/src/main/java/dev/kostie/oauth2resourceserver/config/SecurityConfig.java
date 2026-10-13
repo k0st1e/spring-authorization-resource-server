@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -27,13 +29,21 @@ public class SecurityConfig {
                 // Resource Server Configuration
                 .oauth2ResourceServer((oauth2) -> oauth2
                         .jwt((jwt) -> jwt
-                                // Authorization Server JWK URI.
-                                .jwkSetUri(jwksUri)
+
+                                // Authorization Server JWK URI - Commented out see bean below.
+                                // .jwkSetUri(jwksUri)
+
                                 // Our custom Authentication Converter for the RS.
                                 .jwtAuthenticationConverter(new CustomJwtAuthenticationTokenConverter())
                         )
                 );
 
         return http.build();
+    }
+
+    // `JwtDecoder` as a `@Bean` so we can mock it with `Testcontainers`.
+    @Bean
+    public JwtDecoder jwtDecoder() {
+        return NimbusJwtDecoder.withJwkSetUri(jwksUri).build();
     }
 }
