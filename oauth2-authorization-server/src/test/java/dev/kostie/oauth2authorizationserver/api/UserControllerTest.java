@@ -57,7 +57,7 @@ class UserControllerTest {
     }
 
     @Test
-    void userShouldRegister() {
+    void register_withValidCredentials_returns201() {
 
         given()
                 .contentType(ContentType.JSON)
